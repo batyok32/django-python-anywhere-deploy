@@ -2,7 +2,7 @@
 from rest_framework import serializers
 # Models
 from .models import Product, Category, Comment, Brand, Subcategory, \
- Coupon
+ Coupon, Size
 from django.contrib.auth import get_user_model
 
 # Parler
@@ -150,6 +150,12 @@ class CouponSerializer(serializers.ModelSerializer):
         fields = ('id', 'code', 'discount')
 
 
+class SizeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Size
+        fields = ('id', 'size_name', 'product', 'amount', 'available')
+        read_only_fields = ('id', 'product',)
 
 
 class AccountInfoSerializer(serializers.ModelSerializer):

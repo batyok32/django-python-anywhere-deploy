@@ -144,10 +144,10 @@ class Product(TranslatableModel):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     brand = models.ForeignKey(
         Brand, related_name='products', on_delete=models.CASCADE, null=True, blank=True)
-    amount = models.IntegerField()
     discount = models.IntegerField(blank=True, null=True,
                                    validators=[MinValueValidator(0),
                                                MaxValueValidator(100)])
+    amount = models.IntegerField(default=1)
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -238,6 +238,19 @@ class Product(TranslatableModel):
 
         super(Product, self).save(*args, **kwargs)
 
+
+class Size(models.Model):
+    size_name = models.CharField(max_length=50)
+    product = models.ForeignKey(Product,
+                                on_delete=models.CASCADE,
+                                related_name='sizes')
+    amount = models.IntegerField(default=1)
+    available = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.amount < 1:
+            self.available = False
+        super(Size, self).save(*args, **kwargs)
 
 class Comment(models.Model):
     product = models.ForeignKey(Product,

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Comment, Contact, Brand, Subcategory, Coupon
+from .models import Category, Product, Comment, Contact, Size, Brand, Subcategory, Coupon
 from django.contrib.admin import AdminSite
 from .adminImg import product_img, category_img
 from parler.admin import TranslatableAdmin
@@ -7,7 +7,7 @@ from parler.admin import TranslatableAdmin
 
 
 AdminSite.site_url = "/api/v0/products/"
-AdminSite.site_header = "Test "
+AdminSite.site_header = "DAVIDO ADMIN"
 
 
 @admin.register(Category)
@@ -28,7 +28,9 @@ class CategoryAdmin(TranslatableAdmin):
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('name',)}
 
-
+class SizeInline(admin.TabularInline):
+    model=Size
+    extra=1
 
 
 @admin.register(Subcategory)
@@ -85,16 +87,21 @@ class ProductAdmin(TranslatableAdmin):
         }),
 
     )
-    list_display = ['name', product_img, 'sold', 'slug', 'new_price',
+    list_display = ['name', product_img, 'sold', 'amount', 'new_price',
                     'available', 'created', 'updated']
     list_filter = ['available', 'created', 'updated']
     list_editable = ['new_price', 'available']
     autocomplete_fields = ['category', 'subcategory']
+    search_fields=['name']
     # prepopulated_fields = {'slug': ('name',), }
     readonly_fields = ['created', 'updated']
+    inlines=[SizeInline,]
+
 
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('name',)}
+
+
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):

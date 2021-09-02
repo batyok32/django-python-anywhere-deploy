@@ -37,3 +37,7 @@ class Paginate(object):
         #     count
         # ]
         return result
+
+
+# For product views count
+# import ast

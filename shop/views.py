@@ -4,13 +4,14 @@ from django.utils import timezone
 
 
 # Models
-from .models import Category, Product, Comment, Subcategory, Brand, Coupon
+from .models import Category, Product, Comment, Subcategory, Brand, Coupon, Size
 
 # Serializers
 from .serializers import ProductSerializer, CommentListSerializer, \
     CategorySerializer, SubcategorySerializer, \
     BrandSerializer, CouponSerializer, \
-    AccountInfoSerializer, SearchSerializer, ProductDetailSerializer
+    AccountInfoSerializer, SearchSerializer, ProductDetailSerializer, \
+    SizeSerializer
 
 # RESTFRAMEWORK stuff
 from rest_framework import generics, permissions
@@ -25,7 +26,7 @@ from .filters import ProductFilter, BrandFilter, SearchingFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 # Recommendation
-from .recommendation import get_reccommendation
+# from .recommendation import get_reccommendation
 
 # Pagination
 from .pagination import MyOffsetPagination
@@ -104,15 +105,16 @@ class ProductDetail(generics.RetrieveAPIView):
     def get_queryset(self):
         lang_code = get_language_from_request(self.request)
         query = Product.objects.language(lang_code).filter(available=True)
+        print("QUERY", query)
         return query
     
     def get_object(self):
         queryset = self.get_queryset()
-        filter_query = {}
-        filter_query['id'] = self.kwargs['pk']
-        obj = get_object_or_404(queryset, **filter_query)
+        # filter_query = {}
+        # filter_query['id'] = self.kwargs['pk']
+        obj = get_object_or_404(queryset, id=self.kwargs['pk'])
         self.check_object_permissions(self.request, obj)
-        
+        print("OBJECT", obj)
         return obj
 
     def retrieve(self, request, *args, **kwargs):
@@ -142,7 +144,15 @@ class CommentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         prd_id = self.kwargs['pk']
-        return Comment.objects.filter(product__id=prd_id)
+        return Comment.objects.filter(product__id=prd_id, active=True)
+
+class SizeList(generics.ListAPIView):
+    serializer_class=SizeSerializer
+
+
+    def get_queryset(self):
+        prd_id = self.kwargs['pk']
+        return Size.objects.filter(product__id=prd_id, available=True)
 
 # Check coupon is valid or not
 class CouponCheckView(APIView):
@@ -170,18 +180,18 @@ class AccountInfoList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
-class Recommend(APIView):
+# class Recommend(APIView):
 
-    def get(self, request, *args, **kwargs):
-        #print("Recommending started")
-        prPk = self.kwargs['pk']
-        lang_code = get_language_from_request(request)
-        #print(f"Lang:{lang_code} pk: {prPk}")
-        res = get_reccommendation(prPk, lang_code)
-        #print("Response", res)
-        products = Product.objects.language(lang_code).filter(id__in=res)
-        #print("Products", products)
-        serializer = ProductSerializer(products, many=True, context={'request':request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#     def get(self, request, *args, **kwargs):
+#         #print("Recommending started")
+#         prPk = self.kwargs['pk']
+#         lang_code = get_language_from_request(request)
+#         #print(f"Lang:{lang_code} pk: {prPk}")
+#         res = get_reccommendation(prPk, lang_code)
+#         #print("Response", res)
+#         products = Product.objects.language(lang_code).filter(id__in=res, available=True)
+#         #print("Products", products)
+#         serializer = ProductSerializer(products, many=True, context={'request':request})
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

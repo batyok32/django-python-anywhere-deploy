@@ -1,6 +1,6 @@
 # Models
 from .models import Order, OrderItem
-from shop.models import Coupon, Product
+from shop.models import Coupon, Product, Size
 from authentication.models import UserAccount
 # Filters
 from rest_framework.filters import  OrderingFilter
@@ -54,14 +54,23 @@ class OrderListCreateView(generics.ListCreateAPIView):
         
         # Another serializer
         for item in cart_items: 
+            print("TRYING TO ORDER")
             product = Product.objects.get(id=item['product_id'])
             quantity = item['product_quantity']
+            size_id = item['size']
+            size = Size.objects.get(id=size_id)
+            size.amount -= quantity
             total = product.new_price * int(quantity)
             product.sold += quantity
             product.amount -= quantity
+            size.save()
             product.save()
-            orderItem = OrderItemSerializer(data={"price": total, "quantity":quantity})
+            orderItem = OrderItemSerializer(data={"size":size.size_name,"price": total, "quantity":quantity})
             orderItem.is_valid(raise_exception=True)
+            print("EVERYTHING IS GOOD OrderItem", orderItem)
+            print("EVERYTHING IS GOOD SIze >>>", size)
+            print("EVERYTHING IS GOOD SIze NAme >>>", size.size_name)
+            print("EVERYTHING IS GOOD Product >>>", product)
             orderItem.save(order=order, product=product)
         order.save()
         # Response

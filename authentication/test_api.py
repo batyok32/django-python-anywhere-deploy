@@ -12,6 +12,12 @@ curl \
     -H Authorization: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDI5NzU5LCJqdGkiOiIyNDJiZjE3MjdkOGM0YWZlYTFiY2ViZTRkNGJkMTAzMCIsInVzZXJfaWQiOjF9.gZJ0rdWjhZPqEf_REo2yfJ34T0u4uOE7QdYsTbWV2jI" \
     http://localhost:8000/api/v0/account/info/
 
+curl \
+    -X GET \
+    -H "Content-Type: application/json" \
+    -H "Accept-Language: ru" \
+    http://localhost:8000/api/v0/products/
+
 
 # curl \
 #     -X GET \

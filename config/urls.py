@@ -5,8 +5,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 # Rest Docs
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+# from drf_yasg.views import get_schema_view
+# from drf_yasg import openapi
 
 # Settings
 from django.conf import settings
